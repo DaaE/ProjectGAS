@@ -2,6 +2,8 @@
 
 
 #include "ProjectGASCharacter.h"
+#include "AbilitySystemComponent.h"
+#include "../AbilitySystem/Attributes/ProjectGASAttributeSet.h"
 
 // Enhanced Input 관련 헤더
 // 구현 파일(.cpp)에서는 전방 선언 대신 실제 헤더를 include 해야 함
@@ -16,6 +18,9 @@
 // 이동 관련
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "AbilitySystem/Abilities/ProjectGASGameplayAbility.h"
+#include "AbilitySystem/Abilities/ProjectGASAbility_BasicAttack.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 AProjectGASCharacter::AProjectGASCharacter()
@@ -62,6 +67,85 @@ AProjectGASCharacter::AProjectGASCharacter()
 	// 이동 방향으로 캐릭터가 자동으로 회전 (RPG 스타일)
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f);
 	// 회전 속도
+	
+	// === GAS 컴포넌트 생성 ===
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(
+		TEXT("AbilitySystemComponent"));
+
+	AttributeSet = CreateDefaultSubobject<UProjectGASAttributeSet>(
+		TEXT("AttributeSet"));
+	// AttributeSet은 Actor 컴포넌트가 아니라 UObject라서 좀 특이하게
+	// CreateDefaultSubobject로 만들지만 SetupAttachment는 필요 없어요
+	// (계층 구조가 아니라 ASC 내부 데이터로 등록될 거라서)
+}
+
+UAbilitySystemComponent* AProjectGASCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+	// GAS 생태계 전체 (어빌리티, GameplayCue, UI 등)가
+	// 이 함수를 통해 ASC에 접근해요. 단순하지만 핵심적인 함수예요.
+}
+
+void AProjectGASCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	if (AbilitySystemComponent)
+	{
+		// ASC에게 "이 액터가 주인(Owner)이자 본체(Avatar)다" 라고 초기화
+		// Owner와 Avatar가 분리된 이유: PlayerState 방식에서는
+		// Owner = PlayerState(영속적), Avatar = Character(리스폰마다 교체)
+		// 가 다르기 때문이에요. 우리는 둘 다 Character로 동일하게 설정.
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		
+		// ASC 초기화가 끝난 직후에 어빌리티 부여
+		// 순서가 중요해요 - InitAbilityActorInfo 전에 부여하면 동작 안 함
+		GiveDefaultAbilities();
+	}
+}
+
+void AProjectGASCharacter::GiveDefaultAbilities()
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+
+	for (TSubclassOf<UProjectGASGameplayAbility> AbilityClass : DefaultAbilities)
+	{
+		if (AbilityClass)
+		{
+			// FGameplayAbilitySpec : "이 어빌리티를 레벨 몇으로, 어떤 InputID로
+			// 캐릭터에게 부여할지"를 담는 명세 객체
+			// GameplayEffectSpec과 비슷한 패턴이에요 - GAS는 뭔가를
+			// "적용"하기 전에 항상 Spec(명세)을 먼저 만드는 일관된 패턴을 씁니다
+			FGameplayAbilitySpec AbilitySpec(AbilityClass, 1);
+			// 1 = 어빌리티 레벨 (스킬 레벨업 시스템 만들 때 쓰일 값)
+
+			AbilitySystemComponent->GiveAbility(AbilitySpec);
+			// GiveAbility : 실제로 ASC의 "보유 어빌리티 목록"에 등록
+			// 이 시점부터 TryActivateAbility로 발동 가능해짐
+		}
+	}
+}
+
+void AProjectGASCharacter::OnBasicAttackInput(const struct FInputActionValue& Value)
+{
+	if (AbilitySystemComponent)
+	{
+		FGameplayTagContainer TagContainer;
+		// FGameplayTagContainer : 태그를 "여러 개" 담는 컨테이너
+		// 지금은 1개만 넣지만, 컨테이너로 받는 이유는 나중에
+		// "이 중 하나라도 매칭되면 발동" 같은 OR 조건 확장이 가능해서예요
+
+		TagContainer.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Attack.Light")));
+				
+		// "Try"가 붙은 이유: CanActivateAbility 체크를 통과해야만
+		// 실제 발동되기 때문이에요 (쿨타임/코스트 등 자동 체크)
+		AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+		// 클래스를 직접 안 적었죠? 태그만 보고 ASC가 보유한 어빌리티 중에서
+		// 해당 태그를 가진 걸 찾아서 발동시켜요
+	}
 }
 
 // Called when the game starts or when spawned
@@ -75,8 +159,8 @@ void AProjectGASCharacter::BeginPlay()
 	// === Enhanced Input 컨텍스트 등록 ===
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 		// Cast<T> : C#의 as 연산자와 같음
-			// APlayerController* PC = GetController() as APlayerController; 과 동일
-				// 실패 시 nullptr 반환 (C#의 null 반환과 같음)
+		// APlayerController* PC = GetController() as APlayerController; 과 동일
+		// 실패 시 nullptr 반환 (C#의 null 반환과 같음)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
@@ -88,7 +172,18 @@ void AProjectGASCharacter::BeginPlay()
 			// 0 = 우선순위. 숫자 낮을수록 우선순위 높음
 			// 여러 컨텍스트를 상황에 따라 교체하는 게 Enhanced Input의 핵심
 		}
+		
+		if (HUDWidgetClass)
+		{
+			HUDWidgetInstance = CreateWidget<UUserWidget>(PC, HUDWidgetClass);
+			if (HUDWidgetInstance)
+			{
+				HUDWidgetInstance->AddToViewport();
+				// AddToViewport : 이 위젯을 실제 화면에 그리기 시작
+			}
+		}
 	}
+	
 }
 
 // Called to bind functionality to input
@@ -116,6 +211,9 @@ void AProjectGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 		EIC->BindAction(JumpAction, ETriggerEvent::Completed,
 			this, &ACharacter::StopJumping);
+		
+		EIC->BindAction(BasicAttackAction, ETriggerEvent::Started,
+			this, &AProjectGASCharacter::OnBasicAttackInput);
 	}
 }
 

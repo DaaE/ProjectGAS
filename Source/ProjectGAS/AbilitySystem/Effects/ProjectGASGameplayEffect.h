@@ -1,0 +1,20 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameplayEffect.h"
+#include "ProjectGASGameplayEffect.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class PROJECTGAS_API UProjectGASGameplayEffect : public UGameplayEffect
+{
+	GENERATED_BODY()
+	
+public:
+	UProjectGASGameplayEffect();
+	// 지금은 비어있어도 됨. 나중에 공통 초기화 로직 추가할 확장 포인트
+};

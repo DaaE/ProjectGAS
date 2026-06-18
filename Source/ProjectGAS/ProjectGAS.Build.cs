@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -7,6 +7,8 @@ public class ProjectGAS : ModuleRules
 	public ProjectGAS(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		
+		PublicIncludePaths.Add("ProjectGAS");
 	
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
@@ -16,7 +18,7 @@ public class ProjectGAS : ModuleRules
 			"InputCore", 
 			"EnhancedInput",		// Enhanced Input
 			"GameplayAbilities",	// GAS
-			"GameplayTags",			// GAS 에서 사용
+			"GameplayTags",			// use in GAS 
 			"GameplayTasks",		// GAS AbilityTask
 			"UMG",					// UI
 			"CommonUI",				// Common UI
@@ -26,7 +28,7 @@ public class ProjectGAS : ModuleRules
 		{
 			"Slate",			
 			"SlateCore",
-			"UnrealEd"				//에디터 툴용 (Editor 모듈 분리 전 임시)
+			"UnrealEd"				// for editor tool (Editor 분리 전 임시)
 		});
 
 		// Uncomment if you are using Slate UI
