@@ -125,6 +125,11 @@ protected:
 
 	void OnBasicAttackInput(const struct FInputActionValue& Value);
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> BuffAction;
+
+	void OnBuffInput(const struct FInputActionValue& Value);
+	
 	// 임시 UI 디버그용
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UUserWidget> HUDWidgetClass;

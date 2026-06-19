@@ -15,6 +15,9 @@ UProjectGASAttributeSet::UProjectGASAttributeSet()
 	InitMana(50.f);
 	InitMaxMana(50.f);
 	// Init~ 함수들은 ATTRIBUTE_ACCESSORS 매크로가 자동 생성해준 거예요
+	
+	InitAttackPower(10.f);
+	// 기본 공격력 10
 }
 
 void UProjectGASAttributeSet::GetLifetimeReplicatedProps(
@@ -36,6 +39,9 @@ void UProjectGASAttributeSet::GetLifetimeReplicatedProps(
 	DOREPLIFETIME_CONDITION_NOTIFY(UProjectGASAttributeSet, Mana,
 		COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UProjectGASAttributeSet, MaxMana,
+		COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(UProjectGASAttributeSet, AttackPower,
 		COND_None, REPNOTIFY_Always);
 }
 
@@ -59,6 +65,11 @@ void UProjectGASAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana)
 void UProjectGASAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UProjectGASAttributeSet, MaxMana, OldMaxMana);
+}
+
+void UProjectGASAttributeSet::OnRep_AttackPower(const FGameplayAttributeData& OldAttackPower)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UProjectGASAttributeSet, AttackPower, OldAttackPower);
 }
 
 void UProjectGASAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)

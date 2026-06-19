@@ -38,9 +38,12 @@ void UProjectGASAbility_BasicAttack::ActivateAbility(const FGameplayAbilitySpecH
 		// 실제 차감을 실행해요. 이 둘이 분리된 이유는 멀티플레이어에서
 		// "확인"과 "실행" 사이에 다른 어빌리티가 끼어들 수 있어서예요.
 	{
+		UE_LOG(LogTemp, Warning, TEXT("BasicAttack Commit Failed - On Cooldown"));
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("BasicAttack Activated"));
 
 	// 실제 데미지 Effect 적용
 	if (DamageEffectClass && GetAbilitySystemComponentFromActorInfo())
@@ -69,4 +72,15 @@ void UProjectGASAbility_BasicAttack::EndAbility(const FGameplayAbilitySpecHandle
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 	// Super 호출이 중요해요. 부모(UGameplayAbility)의 EndAbility가
 	// 내부적으로 정리 작업(태그 제거, 인스턴스 정리 등)을 하기 때문이에요.
+}
+
+UGameplayEffect* UProjectGASAbility_BasicAttack::GetCooldownGameplayEffect() const
+{
+	if (CooldownEffectClass)
+	{
+		// GetDefaultObject : 이 클래스의 CDO를 가져옴
+		// GameplayEffect는 인스턴스화 없이 CDO 자체를 "명세"로 사용해요
+		return CooldownEffectClass->GetDefaultObject<UGameplayEffect>();
+	}
+	return nullptr;
 }

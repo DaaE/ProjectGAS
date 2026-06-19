@@ -148,6 +148,17 @@ void AProjectGASCharacter::OnBasicAttackInput(const struct FInputActionValue& Va
 	}
 }
 
+void AProjectGASCharacter::OnBuffInput(const struct FInputActionValue& Value)
+{
+	if (AbilitySystemComponent)
+	{
+		FGameplayTagContainer TagContainer;
+		TagContainer.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Skill.Dash")));
+
+		AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+	}
+}
+
 // Called when the game starts or when spawned
 void AProjectGASCharacter::BeginPlay()
 {
@@ -214,6 +225,9 @@ void AProjectGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		
 		EIC->BindAction(BasicAttackAction, ETriggerEvent::Started,
 			this, &AProjectGASCharacter::OnBasicAttackInput);
+		
+		EIC->BindAction(BuffAction, ETriggerEvent::Started,
+			this, &AProjectGASCharacter::OnBuffInput);
 	}
 }
 

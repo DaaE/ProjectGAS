@@ -37,4 +37,11 @@ protected:
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		bool bReplicateEndAbility,
 		bool bWasCancelled) override;
+	
+	// 쿨타임으로 쓸 GameplayEffect 클래스
+	UPROPERTY(EditDefaultsOnly, Category = "Cooldown")
+	TSubclassOf<UGameplayEffect> CooldownEffectClass;
+
+	// UGameplayAbility가 CanActivateAbility 체크 시 자동으로 호출하는 함수
+	virtual UGameplayEffect* GetCooldownGameplayEffect() const override;
 };

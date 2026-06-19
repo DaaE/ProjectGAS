@@ -49,6 +49,14 @@ public:
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UProjectGASAttributeSet, MaxMana)
 	
+	UPROPERTY(BlueprintReadOnly, Category = "Combat",
+	ReplicatedUsing = OnRep_AttackPower)
+	FGameplayAttributeData AttackPower;
+	ATTRIBUTE_ACCESSORS(UProjectGASAttributeSet, AttackPower)
+
+	UFUNCTION()
+	virtual void OnRep_AttackPower(const FGameplayAttributeData& OldAttackPower);
+	
 	// === 리플리케이션 설정 ===
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// C#에는 이런 개념이 없었죠. 멀티플레이어에서 "이 변수를 서버에서 클라이언트로 자동 동기화하라"고 등록하는 함수예요.
