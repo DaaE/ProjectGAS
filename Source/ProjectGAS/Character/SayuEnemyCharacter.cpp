@@ -1,7 +1,7 @@
-﻿#include "ProjectGASEnemyCharacter.h"
+﻿#include "SayuEnemyCharacter.h"
 #include "../AbilitySystem/Attributes/SayuAttributeSet_Enemy.h"
 
-AProjectGASEnemyCharacter::AProjectGASEnemyCharacter()
+ASayuEnemyCharacter::ASayuEnemyCharacter()
 {
 	AttributeSet = CreateDefaultSubobject<USayuAttributeSet_Enemy>(TEXT("AttributeSet"));
 	// ASC는 베이스 클래스 생성자에서 이미 생성됨.

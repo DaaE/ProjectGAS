@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectGASHUDWidget.h"
+#include "SayuHUDWidget.h"
 #include "AbilitySystemComponent.h"
 #include "../AbilitySystem/Attributes/SayuAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 
-void UProjectGASHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+void USayuHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 

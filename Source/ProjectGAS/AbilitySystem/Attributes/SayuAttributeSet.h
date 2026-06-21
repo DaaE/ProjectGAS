@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "ProjectGASAttributeSetMacros.h"
+#include "SayuAttributeSetMacros.h"
 #include "SayuAttributeSet.generated.h"
 
 UCLASS()

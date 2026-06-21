@@ -7,7 +7,7 @@
 
 #include "CoreMinimal.h"
 #include "SayuCharacterBase.h"
-#include "ProjectGASCharacter.generated.h"
+#include "SayuCharacter.generated.h"
 // UE 리플렉션 시스템이 자동 생성하는 코드를 포함
 // 반드시 마지막 #include 여야 함 - 순서 틀리면 컴파일 오류
 
@@ -20,7 +20,7 @@ class USayuAttributeSet;
 
 UCLASS()
 
-class PROJECTGAS_API AProjectGASCharacter : public ASayuCharacterBase
+class PROJECTGAS_API ASayuCharacter : public ASayuCharacterBase
 
 
 {
@@ -29,7 +29,7 @@ class PROJECTGAS_API AProjectGASCharacter : public ASayuCharacterBase
 
 public:
 	// Sets default values for this character's properties
-	AProjectGASCharacter();
+	ASayuCharacter();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

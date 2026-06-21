@@ -2,17 +2,17 @@
 
 #include "CoreMinimal.h"
 #include "SayuCharacterBase.h"
-#include "ProjectGASEnemyCharacter.generated.h"
+#include "SayuEnemyCharacter.generated.h"
 
 class USayuAttributeSet_Enemy;
 
 UCLASS()
-class PROJECTGAS_API AProjectGASEnemyCharacter : public ASayuCharacterBase
+class PROJECTGAS_API ASayuEnemyCharacter : public ASayuCharacterBase
 {
 	GENERATED_BODY()
 
 public:
-	AProjectGASEnemyCharacter();
+	ASayuEnemyCharacter();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")

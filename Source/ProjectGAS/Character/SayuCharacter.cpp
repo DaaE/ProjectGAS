@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectGASCharacter.h"
+#include "SayuCharacter.h"
 #include "AbilitySystemComponent.h"
 #include "../AbilitySystem/Attributes/SayuAttributeSet.h"
 
@@ -23,7 +23,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 
 // Sets default values
-AProjectGASCharacter::AProjectGASCharacter()
+ASayuCharacter::ASayuCharacter()
 // 생성자 - C#의 Awake() 또는 생성자와 같음
 // 컴포넌트 생성과 기본값 설정은 여기서
 {
@@ -74,7 +74,7 @@ AProjectGASCharacter::AProjectGASCharacter()
 	// (계층 구조가 아니라 ASC 내부 데이터로 등록될 거라서)
 }
 
-void AProjectGASCharacter::OnBasicAttackInput(const struct FInputActionValue& Value)
+void ASayuCharacter::OnBasicAttackInput(const struct FInputActionValue& Value)
 {
 	if (!AbilitySystemComponent)
 	{
@@ -107,7 +107,7 @@ void AProjectGASCharacter::OnBasicAttackInput(const struct FInputActionValue& Va
 	}
 }
 
-void AProjectGASCharacter::OnBuffInput(const struct FInputActionValue& Value)
+void ASayuCharacter::OnBuffInput(const struct FInputActionValue& Value)
 {
 	if (AbilitySystemComponent)
 	{
@@ -119,7 +119,7 @@ void AProjectGASCharacter::OnBuffInput(const struct FInputActionValue& Value)
 }
 
 // Called when the game starts or when spawned
-void AProjectGASCharacter::BeginPlay()
+void ASayuCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	// C#의 base.Start() - 부모 클래스 BeginPlay 먼저 호출
@@ -157,7 +157,7 @@ void AProjectGASCharacter::BeginPlay()
 }
 
 // Called to bind functionality to input
-void AProjectGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ASayuCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
@@ -170,10 +170,10 @@ void AProjectGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		// ETriggerEvent::Started   : 키 누른 순간 한 번
 		// ETriggerEvent::Completed : 키 뗀 순간 한 번
 		EIC->BindAction(MoveAction, ETriggerEvent::Triggered,
-			this, &AProjectGASCharacter::Move);
+			this, &ASayuCharacter::Move);
 
 		EIC->BindAction(LookAction, ETriggerEvent::Triggered,
-			this, &AProjectGASCharacter::Look);
+			this, &ASayuCharacter::Look);
 
 		EIC->BindAction(JumpAction, ETriggerEvent::Started,
 			this, &ACharacter::Jump);
@@ -183,14 +183,14 @@ void AProjectGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 			this, &ACharacter::StopJumping);
 		
 		EIC->BindAction(BasicAttackAction, ETriggerEvent::Started,
-			this, &AProjectGASCharacter::OnBasicAttackInput);
+			this, &ASayuCharacter::OnBasicAttackInput);
 		
 		EIC->BindAction(BuffAction, ETriggerEvent::Started,
-			this, &AProjectGASCharacter::OnBuffInput);
+			this, &ASayuCharacter::OnBuffInput);
 	}
 }
 
-void AProjectGASCharacter::Move(const FInputActionValue& Value)
+void ASayuCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	// FInputActionValue에서 Vector2D 타입으로 꺼냄
@@ -216,7 +216,7 @@ void AProjectGASCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void AProjectGASCharacter::Look(const FInputActionValue& Value)
+void ASayuCharacter::Look(const FInputActionValue& Value)
 {
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
@@ -228,7 +228,7 @@ void AProjectGASCharacter::Look(const FInputActionValue& Value)
 }
 
 // Called every frame
-void AProjectGASCharacter::Tick(float DeltaTime)
+void ASayuCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	// 지금은 비어있음. 나중에 필요하면 채울 것

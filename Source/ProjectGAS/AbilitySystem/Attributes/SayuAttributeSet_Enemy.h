@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "ProjectGASAttributeSetMacros.h"
+#include "SayuAttributeSetMacros.h"
 #include "SayuAttributeSet_Enemy.generated.h"
 
 UCLASS()
