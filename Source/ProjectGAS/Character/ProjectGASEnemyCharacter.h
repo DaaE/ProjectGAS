@@ -4,7 +4,7 @@
 #include "SayuCharacterBase.h"
 #include "ProjectGASEnemyCharacter.generated.h"
 
-class UProjectGASAttributeSet_Enemy;
+class USayuAttributeSet_Enemy;
 
 UCLASS()
 class PROJECTGAS_API AProjectGASEnemyCharacter : public ASayuCharacterBase
@@ -16,5 +16,5 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
-	TObjectPtr<UProjectGASAttributeSet_Enemy> AttributeSet;
+	TObjectPtr<USayuAttributeSet_Enemy> AttributeSet;
 };

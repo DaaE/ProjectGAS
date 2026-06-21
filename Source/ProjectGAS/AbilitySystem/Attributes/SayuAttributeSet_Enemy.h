@@ -4,30 +4,30 @@
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
 #include "ProjectGASAttributeSetMacros.h"
-#include "ProjectGASAttributeSet_Enemy.generated.h"
+#include "SayuAttributeSet_Enemy.generated.h"
 
 UCLASS()
-class PROJECTGAS_API UProjectGASAttributeSet_Enemy : public UAttributeSet
+class PROJECTGAS_API USayuAttributeSet_Enemy : public UAttributeSet
 {
 	GENERATED_BODY()
 
 public:
-	UProjectGASAttributeSet_Enemy();
+	USayuAttributeSet_Enemy();
 
 	UPROPERTY(BlueprintReadOnly, Category = "Health",
 		ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS(UProjectGASAttributeSet_Enemy, Health)
+	ATTRIBUTE_ACCESSORS(USayuAttributeSet_Enemy, Health)
 
 	UPROPERTY(BlueprintReadOnly, Category = "Health",
 		ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(UProjectGASAttributeSet_Enemy, MaxHealth)
+	ATTRIBUTE_ACCESSORS(USayuAttributeSet_Enemy, MaxHealth)
 
 	UPROPERTY(BlueprintReadOnly, Category = "Combat",
 		ReplicatedUsing = OnRep_Defense)
 	FGameplayAttributeData Defense;
-	ATTRIBUTE_ACCESSORS(UProjectGASAttributeSet_Enemy, Defense)
+	ATTRIBUTE_ACCESSORS(USayuAttributeSet_Enemy, Defense)
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
