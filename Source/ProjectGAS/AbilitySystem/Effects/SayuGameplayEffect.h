@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffect.h"
-#include "ProjectGASGameplayEffect.generated.h"
+#include "SayuGameplayEffect.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTGAS_API UProjectGASGameplayEffect : public UGameplayEffect
+class PROJECTGAS_API USayuGameplayEffect : public UGameplayEffect
 {
 	GENERATED_BODY()
 	
 public:
-	UProjectGASGameplayEffect();
+	USayuGameplayEffect();
 	// 지금은 비어있어도 됨. 나중에 공통 초기화 로직 추가할 확장 포인트
 };
