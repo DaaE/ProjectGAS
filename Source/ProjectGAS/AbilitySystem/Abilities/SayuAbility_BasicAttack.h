@@ -118,6 +118,13 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_WaitGameplayEvent> WaitTraceEndTask;
 	
+	// 공격 시 보이스 출력
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_WaitGameplayEvent> WaitAttackVoiceTask;
+	
+	UFUNCTION()
+	void OnAttackVoiceEvent(FGameplayEventData Payload);
+	
 	// 실제 매 프레임 충돌 검사를 담당하는 Task
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_WeaponTrace> WeaponTraceTask;

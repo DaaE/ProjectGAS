@@ -22,6 +22,7 @@ public class ProjectGAS : ModuleRules
 			"GameplayTasks",		// GAS AbilityTask
 			"UMG",					// UI
 			"CommonUI",				// Common UI
+			"Niagara"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

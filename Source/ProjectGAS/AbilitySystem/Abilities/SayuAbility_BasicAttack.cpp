@@ -8,6 +8,8 @@
 #include "GameplayEffect.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Effects/SayuEffectPoolManager.h"
+#include "Kismet/GameplayStatics.h"
 
 USayuAbility_BasicAttack::USayuAbility_BasicAttack()
 {
@@ -77,12 +79,16 @@ void USayuAbility_BasicAttack::ActivateAbility(
 	WaitTraceStartTask->ReadyForActivation();
 
 	// 무기 판정 종료 리스너 - 몬타주 NotifyState의 End에서 신호를 보냄
-	FGameplayTag TraceEndTag =
-		FGameplayTag::RequestGameplayTag(FName("Event.Combat.TraceEnd"));
+	FGameplayTag TraceEndTag = FGameplayTag::RequestGameplayTag(FName("Event.Combat.TraceEnd"));
 	WaitTraceEndTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TraceEndTag, nullptr, false, false);
 	WaitTraceEndTask->EventReceived.AddDynamic(
 		this, &USayuAbility_BasicAttack::OnTraceEndEvent);
 	WaitTraceEndTask->ReadyForActivation();
+	
+	FGameplayTag AttackVoiceTag = FGameplayTag::RequestGameplayTag(FName("Event.Combat.AttackVoice"));
+	WaitAttackVoiceTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, AttackVoiceTag, nullptr, false, false);
+	WaitAttackVoiceTask->EventReceived.AddDynamic(this, &USayuAbility_BasicAttack::OnAttackVoiceEvent);
+	WaitAttackVoiceTask->ReadyForActivation();
 
 	// 1타 시작 - 이후 콤보 진행 전부 PlayComboStep이 전담
 	PlayComboStep(0);
@@ -127,6 +133,12 @@ void USayuAbility_BasicAttack::EndAbility(const FGameplayAbilitySpecHandle Handl
 	{
 		WeaponTraceTask->EndTask(); 
 		WeaponTraceTask = nullptr;
+	}
+	
+	if (WaitAttackVoiceTask)
+	{
+		WaitAttackVoiceTask->EndTask(); 
+		WaitAttackVoiceTask = nullptr;
 	}
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
@@ -312,8 +324,7 @@ void USayuAbility_BasicAttack::OnWeaponHitActor(AActor* HitActor)
 		return;
 	}
 
-	FGameplayEffectSpecHandle EffectSpec =
-		MakeOutgoingGameplayEffectSpec(DamageEffectClass);
+	FGameplayEffectSpecHandle EffectSpec = MakeOutgoingGameplayEffectSpec(DamageEffectClass);
 	if (EffectSpec.IsValid())
 	{
 		// 콤보 타수별 데미지 배율 - 배열 범위 밖이면 기본값 1.0
@@ -324,15 +335,31 @@ void USayuAbility_BasicAttack::OnWeaponHitActor(AActor* HitActor)
 		}
 		
 		UE_LOG(LogTemp, Warning, TEXT("[Combo %d] Multiplier: %.2f, ComboDamageMultipliers.Num(): %d"),
-	CurrentComboIndex, Multiplier, ComboDamageMultipliers.Num());
+		CurrentComboIndex, Multiplier, ComboDamageMultipliers.Num());
 
 		EffectSpec.Data->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.DamageMultiplier")),
 			Multiplier);
 		
 		// ApplyGameplayEffectSpecToTarget : ToOwner와 달리, 지정한
 		// 다른 ASC(여기선 맞은 대상)에게 이펙트를 적용함
-		GetAbilitySystemComponentFromActorInfo()
-			->ApplyGameplayEffectSpecToTarget(
-				*EffectSpec.Data.Get(), TargetASC);
+		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*EffectSpec.Data.Get(), TargetASC);
+	}
+}
+
+void USayuAbility_BasicAttack::OnAttackVoiceEvent(FGameplayEventData Payload)
+{
+	AActor* Avatar = GetAvatarActorFromActorInfo();
+	if (!Avatar)
+	{
+		return;
+	}
+
+	// 타격 위치가 아니라 본인(공격자) 위치에서 재생 - 기합 소리니까
+	if (ASayuEffectPoolManager* PoolManager = Cast<ASayuEffectPoolManager>(
+		UGameplayStatics::GetActorOfClass(
+			GetWorld(), ASayuEffectPoolManager::StaticClass())))
+	{
+		PoolManager->PlayEffectAtLocation(
+			Avatar->GetActorLocation(), FRotator::ZeroRotator);
 	}
 }
