@@ -61,6 +61,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
 	TObjectPtr<USayuAttributeSet_Combat> CombatAttributeSet;
 
+	// 이 캐릭터가 SayuGameDataSubsystem의 DataTable에서 어떤 행을 쓸지 식별.
+	// 자식 클래스(ASayuCharacter/ASayuNPCCharacter) 생성자에서 각자 다르게 설정.
+	UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	FName CombatStatsRowID;
+	
 	// 캐릭터가 기본으로 보유할 어빌리티 목록
 	// 블루프린트에서 배열에 BP_Ability들을 등록할 거예요
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")

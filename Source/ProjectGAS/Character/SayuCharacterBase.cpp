@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/SayuGameplayAbility.h"
 #include "AbilitySystem/Attributes/SayuAttributeSet_Combat.h"
 #include "Components/CapsuleComponent.h"
+#include "Subsystems/SayuGameDataSubsystem.h"
 
 
 // Sets default values
@@ -17,8 +18,10 @@ ASayuCharacterBase::ASayuCharacterBase()
 	// 다르므로(플레이어용/적용) 각 자식 생성자에서 만든다.
 	
 	// 모든 캐릭터(플레이어/NPC)가 공통으로 필요하니 여기서 한 번에 생성
-	CombatAttributeSet = CreateDefaultSubobject<USayuAttributeSet_Combat>(
-		TEXT("CombatAttributeSet"));
+	CombatAttributeSet = CreateDefaultSubobject<USayuAttributeSet_Combat>(TEXT("CombatAttributeSet"));
+	
+	// DataTable에서 가져올 ID
+	CombatStatsRowID = TEXT("Player_Default");
 	
 	// 생성자에 추가 - 틱이 꺼져있으면 디버그도 안 그려지니 켜둠
 	PrimaryActorTick.bCanEverTick = true;
@@ -63,6 +66,29 @@ void ASayuCharacterBase::InitializeAbilitySystem()
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	// ASC 초기화가 끝난 직후에 어빌리티 부여
 	// 순서가 중요해요 - InitAbilityActorInfo 전에 부여하면 동작 안 함
+	
+	// === DataTable 기반 기본 스탯 초기화 (Phase 4) ===
+	if (CombatAttributeSet && !CombatStatsRowID.IsNone())
+	{
+		if (const USayuGameDataSubsystem* GameData = GetGameInstance()->GetSubsystem<USayuGameDataSubsystem>())
+		{
+			FSayuCombatStatsRow Stats;
+			if (GameData->GetCombatStats(CombatStatsRowID, Stats))
+			{
+				CombatAttributeSet->InitMaxHealth(Stats.MaxHealth);
+				CombatAttributeSet->InitHealth(Stats.MaxHealth);
+				CombatAttributeSet->InitMaxMana(Stats.MaxMana);
+				CombatAttributeSet->InitMana(Stats.MaxMana);
+				CombatAttributeSet->InitAttackPower(Stats.AttackPower);
+				CombatAttributeSet->InitDefense(Stats.Defense);
+
+				UE_LOG(LogTemp, Warning, TEXT("%s: CombatStats 적용됨 (Row: %s, MaxHealth: %.0f, AttackPower: %.0f)"),
+					*GetName(), *CombatStatsRowID.ToString(), Stats.MaxHealth, Stats.AttackPower);
+			}
+		}
+	}
+
+	
 	GiveDefaultAbilities();
 	bAbilitySystemInitialized = true;
 	

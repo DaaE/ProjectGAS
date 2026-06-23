@@ -17,6 +17,7 @@
 // 이동 관련
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "../Subsystems/SayuGameDataSubsystem.h"
 
 #include "Blueprint/UserWidget.h"
 #include "AbilitySystemBlueprintLibrary.h"
@@ -119,6 +120,12 @@ void ASayuCharacter::BeginPlay()
 	// C#의 base.Start() - 부모 클래스 BeginPlay 먼저 호출
 	// UE에서는 Super:: 호출을 빠뜨리면 부모 초기화가 안 돼서
 	// 예측 불가한 버그가 생길 수 있음. 습관적으로 항상 호출할 것
+	
+	// Subsystem 접근 테스트: GameInstance를 거쳐서 Subsystem을 찾아옴
+	if (USayuGameDataSubsystem* GameDataSubsystem = GetGameInstance()->GetSubsystem<USayuGameDataSubsystem>())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[ASayuCharacter] Subsystem 접근 성공: %s"), *GameDataSubsystem->GetName());
+	}
 	
 	// === Enhanced Input 컨텍스트 등록 ===
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))

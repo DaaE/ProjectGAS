@@ -2,5 +2,5 @@
 
 ASayuNPCCharacter::ASayuNPCCharacter()
 {
-	
+	CombatStatsRowID = TEXT("NPC_Dummy");
 }
