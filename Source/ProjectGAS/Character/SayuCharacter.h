@@ -82,6 +82,24 @@ protected:
 
 	void OnBuffInput(const struct FInputActionValue& Value);
 	
+	// 추가 - Phase 4 Save/Load 동작 검증용
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> QuickSaveAction;
+
+	void OnQuickSaveInput(const struct FInputActionValue& Value);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> QuickLoadAction;
+
+	void OnQuickLoadInput(const struct FInputActionValue& Value);
+	
+	// 임시 디버그용 - Save/Load 검증 끝나면 삭제
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> DebugDamageAction;
+
+	void OnDebugDamageInput(const struct FInputActionValue& Value);
+	////////////////////////////////////////
+	
 	// 임시 UI 디버그용
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UUserWidget> HUDWidgetClass;

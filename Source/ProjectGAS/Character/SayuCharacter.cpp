@@ -21,6 +21,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/Attributes/SayuAttributeSet_Combat.h"
 
 // Sets default values
 ASayuCharacter::ASayuCharacter()
@@ -113,6 +114,34 @@ void ASayuCharacter::OnBuffInput(const struct FInputActionValue& Value)
 	}
 }
 
+void ASayuCharacter::OnQuickSaveInput(const struct FInputActionValue& Value)
+{
+	if (USayuGameDataSubsystem* GameData = GetGameInstance()->GetSubsystem<USayuGameDataSubsystem>())
+	{
+		// CombatAttributeSet은 ASayuCharacterBase의 protected 멤버라 자식 클래스에서 바로 접근 가능
+		GameData->SaveCombatState(CombatAttributeSet, TEXT("QuickSave"));
+	}
+}
+
+void ASayuCharacter::OnQuickLoadInput(const FInputActionValue& Value)
+{
+	if (USayuGameDataSubsystem* GameData = GetGameInstance()->GetSubsystem<USayuGameDataSubsystem>())
+	{
+		GameData->LoadCombatState(CombatAttributeSet, TEXT("QuickSave"));
+	}
+}
+
+void ASayuCharacter::OnDebugDamageInput(const struct FInputActionValue& Value)
+{
+	if (CombatAttributeSet)
+	{
+		// Save/Load 검증용 - 20씩 깎기. 실제 전투 시스템 아님.
+		const float NewHealth = FMath::Max(0.f, CombatAttributeSet->GetHealth() - 20.f);
+		CombatAttributeSet->InitHealth(NewHealth);
+		UE_LOG(LogTemp, Warning, TEXT("[Debug] Health -20 -> %.1f"), NewHealth);
+	}
+}
+
 // Called when the game starts or when spawned
 void ASayuCharacter::BeginPlay()
 {
@@ -188,6 +217,16 @@ void ASayuCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		EIC->BindAction(BuffAction, ETriggerEvent::Started,
 			this, &ASayuCharacter::OnBuffInput);
+
+		EIC->BindAction(QuickSaveAction, ETriggerEvent::Started,
+			this, &ASayuCharacter::OnQuickSaveInput);
+
+		EIC->BindAction(QuickLoadAction, ETriggerEvent::Started,
+			this, &ASayuCharacter::OnQuickLoadInput);
+		
+		// save load 디버그용 확인 후 삭제
+		EIC->BindAction(DebugDamageAction, ETriggerEvent::Started,
+			this, &ASayuCharacter::OnDebugDamageInput);
 	}
 }
 

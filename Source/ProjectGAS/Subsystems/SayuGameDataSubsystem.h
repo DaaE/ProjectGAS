@@ -8,6 +8,8 @@
 #include "SayuCombatStatsRow.h"
 #include "SayuGameDataSubsystem.generated.h"
 
+class USayuAttributeSet_Combat;
+
 /**
  * 
  */
@@ -26,6 +28,12 @@ public:
 	// 캐릭터 종류별 전투 기본 스탯을 RowID로 조회. 찾으면 true + OutStats에 채워줌.
 	UFUNCTION(BlueprintCallable, Category = "Combat Data")
 	bool GetCombatStats(FName RowID, FSayuCombatStatsRow& OutStats) const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	void SaveCombatState(USayuAttributeSet_Combat* AttributeSet, const FString& SlotName);
+
+	UFUNCTION(BlueprintCallable, Category = "Save")
+	bool LoadCombatState(USayuAttributeSet_Combat* AttributeSet, const FString& SlotName);
 	
 private:
 	// Project Settings(USayuGameDataSettings)에서 로드해온 실제 테이블 캐시.

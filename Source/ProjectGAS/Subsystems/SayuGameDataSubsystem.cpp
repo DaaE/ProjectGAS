@@ -3,6 +3,9 @@
 
 #include "SayuGameDataSubsystem.h"
 #include "SayuGameDataSettings.h"
+#include "AbilitySystem/Attributes/SayuAttributeSet_Combat.h"
+#include "Kismet/GameplayStatics.h"
+#include "SaveSystem/SayuSaveGame.h"
 
 void USayuGameDataSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -46,4 +49,49 @@ bool USayuGameDataSubsystem::GetCombatStats(FName RowID, FSayuCombatStatsRow& Ou
 
 	UE_LOG(LogTemp, Warning, TEXT("[SayuGameDataSubsystem] Row '%s'를 CombatStatsTable에서 찾지 못함"), *RowID.ToString());
 	return false;
+}
+
+void USayuGameDataSubsystem::SaveCombatState(USayuAttributeSet_Combat* AttributeSet, const FString& SlotName)
+{
+	if (!AttributeSet)
+	{
+		return;
+	}
+
+	USayuSaveGame* SaveGameObject = Cast<USayuSaveGame>(UGameplayStatics::CreateSaveGameObject(USayuSaveGame::StaticClass()));
+	if (!SaveGameObject)
+	{
+		return;
+	}
+
+	SaveGameObject->SavedHealth = AttributeSet->GetHealth();
+	SaveGameObject->SavedMana = AttributeSet->GetMana();
+
+	UGameplayStatics::SaveGameToSlot(SaveGameObject, SlotName, 0);
+
+	UE_LOG(LogTemp, Warning, TEXT("[SayuGameDataSubsystem] 저장됨 (Slot: %s, Health: %.1f, Mana: %.1f)"),
+		*SlotName, SaveGameObject->SavedHealth, SaveGameObject->SavedMana);
+}
+
+bool USayuGameDataSubsystem::LoadCombatState(USayuAttributeSet_Combat* AttributeSet, const FString& SlotName)
+{
+	if (!AttributeSet || !UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[SayuGameDataSubsystem] 로드 실패 - 슬롯 '%s' 없음"), *SlotName);
+		return false;
+	}
+
+	const USayuSaveGame* SaveGameObject = Cast<USayuSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+	if (!SaveGameObject)
+	{
+		return false;
+	}
+
+	AttributeSet->InitHealth(SaveGameObject->SavedHealth);
+	AttributeSet->InitMana(SaveGameObject->SavedMana);
+
+	UE_LOG(LogTemp, Warning, TEXT("[SayuGameDataSubsystem] 로드됨 (Slot: %s, Health: %.1f, Mana: %.1f)"),
+		*SlotName, SaveGameObject->SavedHealth, SaveGameObject->SavedMana);
+
+	return true;
 }
