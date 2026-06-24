@@ -10,7 +10,7 @@ class USayuItemInstance;
 class USayuItemDefinition;
 
 // 그리드에 배치된 아이템 한 개를 나타냄.
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FSayuInventoryEntry
 {
 	GENERATED_BODY()
@@ -51,9 +51,21 @@ public:
 	bool TryAddInstance(USayuItemInstance* Instance);
 
 	void RemoveItem(USayuItemInstance* Instance);
+	
+	int32 GetGridWidth() const { return GridWidth; }
+	int32 GetGridHeight() const { return GridHeight; }
 
+	// UI가 그리드를 그릴 때 순회할 대상. 읽기 전용 참조로 반환 — 호출하는 쪽이
+	// 이 배열을 직접 수정할 수 없게(const&), 그리고 복사 비용 없이 넘겨줌.
+	const TArray<FSayuInventoryEntry>& GetEntries() const { return Entries; }
+
+	// 그리드 크기를 확장 (가방 업그레이드 등 외부 신호로 호출됨).
+	// 확장만 지원 — 축소는 기존 배치된 아이템이 경계 밖으로 밀려날 수 있어 허용하지 않음.
+	bool ExpandGrid(int32 NewWidth, int32 NewHeight);
+	
 	// 디버그용 — 그리드 점유 상태를 Output Log에 텍스트로 출력.
 	void DebugPrintGrid() const;
+	
 
 protected:
 	virtual void BeginPlay() override;

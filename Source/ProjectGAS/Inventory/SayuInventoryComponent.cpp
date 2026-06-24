@@ -23,6 +23,7 @@ void USayuInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	CellOccupancy.Init(nullptr, GridWidth * GridHeight);
+	Entries.Reserve(GridWidth * GridHeight);
 }
 
 bool USayuInventoryComponent::GetUniformFootprintOccupant(FIntPoint TopLeft, FIntPoint Size, USayuItemInstance*& OutOccupant) const
@@ -218,6 +219,41 @@ void USayuInventoryComponent::RemoveItem(USayuItemInstance* Instance)
 	}
 
 	Entries.RemoveAt(EntryIndex);
+}
+
+bool USayuInventoryComponent::ExpandGrid(int32 NewWidth, int32 NewHeight)
+{
+	if (NewWidth < GridWidth || NewHeight < GridHeight)
+	{
+		return false; // 축소 시도는 거부
+	}
+
+	GridWidth = NewWidth;
+	GridHeight = NewHeight;
+
+	// 평탄화 공식이 GridWidth에 의존하므로, 점유 데이터를 새 크기 기준으로
+	// 전부 다시 채워야 함 — 기존 Entries의 TopLeft/Size 자체는 그대로 유효함
+	// (확장만 허용했기 때문에 범위를 벗어날 일이 없음).
+	CellOccupancy.Init(nullptr, GridWidth * GridHeight);
+
+	for (const FSayuInventoryEntry& Entry : Entries)
+	{
+		const FIntPoint Size = Entry.Instance->ItemDefinition->GridSize;
+		for (int32 Y = Entry.TopLeft.Y; Y < Entry.TopLeft.Y + Size.Y; ++Y)
+		{
+			for (int32 X = Entry.TopLeft.X; X < Entry.TopLeft.X + Size.X; ++X)
+			{
+				CellOccupancy[Y * GridWidth + X] = Entry.Instance;
+			}
+		}
+	}
+
+	// 새 최대 칸 수만큼 Entries 용량도 다시 확보 — 이 호출 자체는 재할당을
+	// 일으킬 수 있지만, 게임플레이 루프 중이 아니라 "확장 이벤트"라는 명확히
+	// 통제된 시점에만 일어나므로 댕글링 위험이 없음.
+	Entries.Reserve(GridWidth * GridHeight);
+
+	return true;
 }
 
 void USayuInventoryComponent::DebugPrintGrid() const
