@@ -7,6 +7,7 @@
 #include "SayuItemDefinition.generated.h"
 
 class USayuItemFragment;
+class UTexture2D;
 
 /**
  * 아이템 하나를 정의하는 데이터 에셋.
@@ -30,6 +31,11 @@ public:
 	// 그리드에서 차지하는 칸 수. X = 가로, Y = 세로.
 	UPROPERTY(EditDefaultsOnly, Category = "Sayu|Item")
 	FIntPoint GridSize = FIntPoint(1, 1);
+	
+	// 인벤토리에 표시할 아이콘. TSoftObjectPtr라 디스크에 있는지만 가벼운 메타데이터로
+	// 들고 있고, 실제 텍스처 데이터는 필요한 시점에 로딩됨.
+	UPROPERTY(EditDefaultsOnly, Category = "Sayu|Item")
+	TSoftObjectPtr<UTexture2D> Icon;
 	
 	// 같은 종류끼리 한 칸에 겹쳐 쌓일 수 있는지.
 	UPROPERTY(EditDefaultsOnly, Category = "Sayu|Item")

@@ -12,6 +12,7 @@
 // 반드시 마지막 #include 여야 함 - 순서 틀리면 컴파일 오류
 
 
+class USayuInventoryWidget;
 class USpringArmComponent;   // 카메라 붐 (카메라와 캐릭터 사이 거리 조절)
 class UCameraComponent;      // 실제 카메라
 class UInputMappingContext;  // Enhanced Input - 키 배열표
@@ -121,6 +122,18 @@ protected:
 	// 임시 UI 디버그용
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<class UUserWidget> HUDWidgetClass;
+	
+	// Inventory 디버그용
+	UPROPERTY(EditDefaultsOnly, Category = "Debug")
+	TObjectPtr<UInputAction> IA_DebugToggleInventory;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Debug")
+	TSubclassOf<USayuInventoryWidget> InventoryWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<USayuInventoryWidget> ActiveInventoryWidget;
+
+	void DebugToggleInventory();
 
 private:
 	UPROPERTY()

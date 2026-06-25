@@ -26,6 +26,7 @@
 #include "Items/SayuItemFragment.h"
 #include "items/SayuItemInstance.h"
 #include "Inventory/SayuInventoryComponent.h"
+#include "UI/SayuInventoryWidget.h"
 
 
 // Sets default values
@@ -174,6 +175,23 @@ void ASayuCharacter::DebugEquipTestItem()
 			InventoryComponent->TryAddInstance(NewInstance);
 			InventoryComponent->DebugPrintGrid();
 		}
+	}
+}
+
+void ASayuCharacter::DebugToggleInventory()
+{
+	if (ActiveInventoryWidget)
+	{
+		ActiveInventoryWidget->RemoveFromParent();
+		ActiveInventoryWidget = nullptr;
+		return;
+	}
+
+	if (InventoryWidgetClass)
+	{
+		ActiveInventoryWidget = CreateWidget<USayuInventoryWidget>(GetWorld(), InventoryWidgetClass);
+		ActiveInventoryWidget->SetInventoryComponent(InventoryComponent);
+		ActiveInventoryWidget->AddToViewport();
 	}
 }
 
