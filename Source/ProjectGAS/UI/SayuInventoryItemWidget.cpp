@@ -3,6 +3,7 @@
 
 #include "SayuInventoryItemWidget.h"
 #include "Components/Image.h"
+#include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Engine/AssetManager.h"
 #include "Items/SayuItemDefinition.h"
@@ -89,8 +90,16 @@ void USayuInventoryItemWidget::NativeOnDragDetected(const FGeometry& InGeometry,
 	// 그리드에서 사라지는 부작용이 있어서, 같은 클래스로 새 인스턴스를 하나 더 만들어 씀.
 	USayuInventoryItemWidget* DragVisual = CreateWidget<USayuInventoryItemWidget>(GetOwningPlayer(), GetClass());
 	DragVisual->SetItemInstance(CurrentInstance);
-
-	DragOperation->DefaultDragVisual = DragVisual;
+	
+	// 드래그 미리보기는 그리드 슬롯 밖이라 크기 기준이 없음 — 지금 이 위젯(원본)이
+	// 실제로 차지하고 있는 크기를 그대로 가져와 SizeBox로 못박음.
+	const FVector2D OriginalSize = InGeometry.GetLocalSize();
+	USizeBox* SizeWrapper = NewObject<USizeBox>(this);
+	SizeWrapper->SetWidthOverride(OriginalSize.X);
+	SizeWrapper->SetHeightOverride(OriginalSize.Y);
+	SizeWrapper->AddChild(DragVisual);
+	
+	DragOperation->DefaultDragVisual = SizeWrapper;
 	DragOperation->Pivot = EDragPivot::MouseDown;
 
 	OutOperation = DragOperation;
