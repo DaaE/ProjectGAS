@@ -30,11 +30,11 @@ public class ProjectGAS : ModuleRules
 		{
 			"Slate",			
 			"SlateCore",
-			"UnrealEd"				// for editor tool (Editor 분리 전 임시)
+			// UnrealEd 제거됨 — 에디터 전용 코드는 SayuEditor 모듈로 분리 완료 (Phase 7)
 		});
 
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		// Uncomment if you are using online features
+		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 		
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
