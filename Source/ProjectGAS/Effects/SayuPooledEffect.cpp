@@ -24,7 +24,7 @@ ASayuPooledEffect::ASayuPooledEffect()
 	SetActorHiddenInGame(true);
 }
 
-void ASayuPooledEffect::PlayEffect(const FVector& Location, const FRotator& Rotation)
+void ASayuPooledEffect::PlayEffect(const FVector& Location, const FRotator& Rotation, float PitchMultiplier)
 {
 	SetActorLocationAndRotation(Location, Rotation);
 	SetActorHiddenInGame(false);
@@ -38,6 +38,7 @@ void ASayuPooledEffect::PlayEffect(const FVector& Location, const FRotator& Rota
 	if (SoundAsset)
 	{
 		AudioComp->SetSound(SoundAsset);
+		AudioComp->SetPitchMultiplier(PitchMultiplier);
 		AudioComp->Play();
 	}
 

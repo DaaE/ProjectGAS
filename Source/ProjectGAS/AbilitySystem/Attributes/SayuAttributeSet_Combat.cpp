@@ -101,6 +101,17 @@ void USayuAttributeSet_Combat::PostGameplayEffectExecute(const FGameplayEffectMo
 			Message.DamageAmount = DamageAmount;
 			Message.NewHealth = GetHealth();
 			Message.MaxHealth = GetMaxHealth();
+			
+			// 실제 충돌 지점이 있으면 그걸 쓰고, 없으면(디버그 자가데미지 등) 액터 위치로 대체
+			if (const FHitResult* HitResult = Data.EffectSpec.GetContext().GetHitResult())
+			{
+				Message.HitLocation = HitResult->ImpactPoint;
+			}
+			else if (Message.Target)
+			{
+				Message.HitLocation = Message.Target->GetActorLocation();
+			}
+			
 			// TODO(임시): 아직 실제 크리티컬 스탯이 없어서, 페이로드 분기 데모용 15% 고정값입니다.
 			// 나중에 크리티컬 관련 스탯이 생기면 ExecCalc_Damage 쪽에서 계산해서 넘기는 방식으로 교체할 것.
 			Message.bIsCritical = FMath::FRand() < 0.15f;

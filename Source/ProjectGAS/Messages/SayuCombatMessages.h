@@ -38,6 +38,11 @@ struct FSayuDamageMessage
 
 	UPROPERTY(BlueprintReadOnly, Category = "Sayu|Combat")
 	float MaxHealth = 0.f;
+	
+	// 실제로 검이 닿은 정확한 위치 (타격 이펙트 스폰용).
+	// 히트 정보가 없는 경우(디버그 자가데미지 등)엔 Target의 액터 위치로 대체됩니다.
+	UPROPERTY(BlueprintReadOnly, Category = "Sayu|Combat")
+	FVector HitLocation = FVector::ZeroVector;
 
 	// 크리티컬 여부 - AttributeSet엔 없는, 이 순간에만 계산되는 파생 데이터
 	UPROPERTY(BlueprintReadOnly, Category = "Sayu|Combat")

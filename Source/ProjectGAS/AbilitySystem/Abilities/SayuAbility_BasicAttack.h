@@ -134,5 +134,5 @@ protected:
 	UFUNCTION()
 	void OnTraceEndEvent(FGameplayEventData Payload);
 	UFUNCTION()
-	void OnWeaponHitActor(AActor* HitActor);
+	void OnWeaponHitActor(AActor* HitActor, FHitResult Hit);
 };

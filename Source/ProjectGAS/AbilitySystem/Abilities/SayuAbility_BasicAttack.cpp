@@ -306,7 +306,7 @@ void USayuAbility_BasicAttack::OnTraceEndEvent(FGameplayEventData Payload)
 	}
 }
 
-void USayuAbility_BasicAttack::OnWeaponHitActor(AActor* HitActor)
+void USayuAbility_BasicAttack::OnWeaponHitActor(AActor* HitActor, FHitResult Hit)
 {
 	UE_LOG(LogTemp, Warning, TEXT("[Combo %d] OnWeaponHitActor 호출: %s"),
 		CurrentComboIndex, HitActor ? *HitActor->GetName() : TEXT("null"));
@@ -327,6 +327,10 @@ void USayuAbility_BasicAttack::OnWeaponHitActor(AActor* HitActor)
 	FGameplayEffectSpecHandle EffectSpec = MakeOutgoingGameplayEffectSpec(DamageEffectClass);
 	if (EffectSpec.IsValid())
 	{
+		// 검이 실제로 닿은 정확한 지점을 EffectContext에 같이 실어줍니다.
+		// GAS가 기본 제공하는 자리라 새로 만들 필요 없이 호출만 하면 됩니다.
+		EffectSpec.Data->GetContext().AddHitResult(Hit);
+		
 		// 콤보 타수별 데미지 배율 - 배열 범위 밖이면 기본값 1.0
 		float Multiplier = 1.0f;
 		if (ComboDamageMultipliers.IsValidIndex(CurrentComboIndex))

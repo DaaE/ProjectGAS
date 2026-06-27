@@ -98,7 +98,7 @@ void UAbilityTask_WeaponTrace::TickTask(float DeltaTime)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("스윕 충돌 발견: %s"), *HitActor->GetName());
 					AlreadyHitActors.Add(HitActor);
-					OnHit.Broadcast(HitActor);	// 어빌리티 쪽에 새 타격 알림
+					OnHit.Broadcast(HitActor, Hit);	// 어빌리티 쪽에 새 타격 알림
 				}
 			}
 		}

@@ -8,8 +8,8 @@
 #include "AbilityTask_WeaponTrace.generated.h"
 
 // 검에 새로 맞은 대상이 생길 때마다 이 델리게이트로 알려줌
-// (OneParam = 매개변수 1개를 실어 보내는 델리게이트
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponTraceHitDelegate, AActor*, HitActor);
+// (TwoParams = 매개변수 2개. 정확한 충돌 지점(FHitResult)까지 같이 넘겨줌)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponTraceHitDelegate, AActor*, HitActor, FHitResult, Hit);
 
 // 무기에 달린 소켓 여러 개(검 손잡이~검 끝)를 매 프레임 스윕 트레이스해서,
 // 한 번의 휘두름 동안 새로 맞은 대상만 델리게이트로 알려주는 Task.

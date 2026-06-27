@@ -22,7 +22,7 @@ public:
 	
 	// 지정한 위치/방향에서 타격 이펙트 재생.
 	// 풀에 빈 인스턴스가 없으면 새로 하나 더 만들어서 씀(경고 로그 남김).
-	void PlayEffectAtLocation(const FVector& Location, const FRotator& Rotation);
+	void PlayEffectAtLocation(const FVector& Location, const FRotator& Rotation, float PitchMultiplier = 1.f);
 
 protected:
 	// Called when the game starts or when spawned

@@ -37,7 +37,7 @@ ASayuPooledEffect* ASayuEffectPoolManager::SpawnPooledEffect()
 	return NewEffect;
 }
 
-void ASayuEffectPoolManager::PlayEffectAtLocation(const FVector& Location, const FRotator& Rotation)
+void ASayuEffectPoolManager::PlayEffectAtLocation(const FVector& Location, const FRotator& Rotation, float PitchMultiplier)
 {
 	// 풀에서 지금 안 쓰이고 있는(숨겨진) 인스턴스를 찾음
 	// - ASayuHitImpactEffect가 평소엔 SetActorHiddenInGame(true) 상태라
@@ -46,7 +46,7 @@ void ASayuEffectPoolManager::PlayEffectAtLocation(const FVector& Location, const
 	{
 		if (Effect && Effect->IsHidden())
 		{
-			Effect->PlayEffect(Location, Rotation);
+			Effect->PlayEffect(Location, Rotation, PitchMultiplier);
 			return;
 		}
 	}
@@ -57,6 +57,6 @@ void ASayuEffectPoolManager::PlayEffectAtLocation(const FVector& Location, const
 
 	if (ASayuPooledEffect* NewEffect = SpawnPooledEffect())
 	{
-		NewEffect->PlayEffect(Location, Rotation);
+		NewEffect->PlayEffect(Location, Rotation, PitchMultiplier);
 	}
 }

@@ -29,7 +29,7 @@ public:
 	FEffectFinishedDelegate OnEffectFinished;
 
 	// 풀 매니저가 이 액터를 빌려갈 때 호출
-	void PlayEffect(const FVector& Location, const FRotator& Rotation);
+	void PlayEffect(const FVector& Location, const FRotator& Rotation, float PitchMultiplier = 1.f);
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
