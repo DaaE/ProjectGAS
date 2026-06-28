@@ -2,13 +2,15 @@
 
 
 #include "SayuAssetManagerInspectorWidget.h"
+
+#include "SayuAssetAuditRowObject.h"
 #include "Engine/AssetManager.h"
 
-TArray<FSayuAssetAuditRow> USayuAssetManagerInspectorWidget::GetAssetAuditReport() const
+TArray<USayuAssetAuditRowObject*> USayuAssetManagerInspectorWidget::GetAssetAuditReport()
 {
-	TArray<FSayuAssetAuditRow> Result;
+	TArray<USayuAssetAuditRowObject*> Result;
 
-	if (!UAssetManager::IsValid())
+	if (!UAssetManager::IsInitialized())
 	{
 		return Result;
 	}
@@ -27,9 +29,10 @@ TArray<FSayuAssetAuditRow> USayuAssetManagerInspectorWidget::GetAssetAuditReport
 
 		for (const FPrimaryAssetId& AssetId : AssetIds)
 		{
-			FSayuAssetAuditRow Row;
-			Row.AssetType = AssetId.PrimaryAssetType.GetName();
-			Row.AssetName = AssetId.PrimaryAssetName;
+			USayuAssetAuditRowObject* Row = NewObject<USayuAssetAuditRowObject>(this);
+			Row->AssetId = AssetId;
+			Row->AssetType = AssetId.PrimaryAssetType.GetName();
+			Row->AssetName = AssetId.PrimaryAssetName;
 
 			// 3) 이 에셋이 실제로 어떤 Bundle에 등록돼 있는지 조회
 			TArray<FAssetBundleEntry> BundleEntries;
@@ -37,10 +40,10 @@ TArray<FSayuAssetAuditRow> USayuAssetManagerInspectorWidget::GetAssetAuditReport
 
 			for (const FAssetBundleEntry& Entry : BundleEntries)
 			{
-				Row.Bundles.Add(Entry.BundleName);
+				Row->Bundles.Add(Entry.BundleName);
 			}
 
-			Row.bHasNoBundles = (Row.Bundles.Num() == 0);
+			Row->bHasNoBundles = (Row->Bundles.Num() == 0);
 
 			Result.Add(Row);
 		}

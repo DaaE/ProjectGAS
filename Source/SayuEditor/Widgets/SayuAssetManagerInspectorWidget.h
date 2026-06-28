@@ -6,25 +6,7 @@
 #include "EditorUtilityWidget.h"
 #include "SayuAssetManagerInspectorWidget.generated.h"
 
-USTRUCT(BlueprintType)
-struct FSayuAssetAuditRow
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Sayu|AssetManager")
-	FName AssetType;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Sayu|AssetManager")
-	FName AssetName;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Sayu|AssetManager")
-	TArray<FName> Bundles;
-
-	/** Bundle이 하나도 없으면 true — 태깅 누락 신호 */
-	UPROPERTY(BlueprintReadOnly, Category = "Sayu|AssetManager")
-	bool bHasNoBundles = false;
-};
-
+class USayuAssetAuditRowObject;
 
 /**
  * 프로젝트에 등록된 모든 Primary Asset Type/Bundle 현황을 점검하는 범용 EUW.
@@ -38,5 +20,5 @@ class SAYUEDITOR_API USayuAssetManagerInspectorWidget : public UEditorUtilityWid
 	
 public:
 	UFUNCTION(BlueprintCallable, Category = "Sayu|AssetManager")
-	TArray<FSayuAssetAuditRow> GetAssetAuditReport() const;
+	TArray<USayuAssetAuditRowObject*> GetAssetAuditReport();
 };
