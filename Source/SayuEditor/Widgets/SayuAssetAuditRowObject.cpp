@@ -34,11 +34,6 @@ void USayuAssetAuditRowObject::UnloadAsset()
 	LoadHandle.Reset();
 }
 
-void USayuAssetAuditRowObject::StaticLoadAllBundles()
-{
-	
-}
-
 bool USayuAssetAuditRowObject::IsLoaded() const
 {
 	return LoadHandle.IsValid() && LoadHandle->HasLoadCompleted();

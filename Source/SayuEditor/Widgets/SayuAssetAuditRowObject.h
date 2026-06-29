@@ -44,10 +44,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Sayu|AssetManager")
 	void UnloadAsset();
 	
-	// 헤더 파일 (.h)
-	UFUNCTION(BlueprintCallable, Category = "Sayu|AssetManager")
-	static void StaticLoadAllBundles(); // static 추가
-
 	/** 로드 요청이 완료됐는지 (버튼/텍스트 표시용) */
 	UFUNCTION(BlueprintCallable, Category = "Sayu|AssetManager")
 	bool IsLoaded() const;
