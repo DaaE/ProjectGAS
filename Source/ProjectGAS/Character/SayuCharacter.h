@@ -137,8 +137,15 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<USayuInventoryWidget> ActiveInventoryWidget;
-
+		
 	void DebugToggleInventory();
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_ToggleUIMouse;
+	
+	void OnUIMousePressed();
+	void OnUIMouseReleased();
+
 
 private:
 	UPROPERTY()

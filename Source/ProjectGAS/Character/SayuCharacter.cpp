@@ -27,6 +27,7 @@
 #include "items/SayuItemInstance.h"
 #include "Inventory/SayuInventoryComponent.h"
 #include "UI/SayuInventoryWidget.h"
+#include "UI/SayuUIInputModeSubsystem.h"
 
 
 // Sets default values
@@ -197,11 +198,11 @@ void ASayuCharacter::DebugToggleInventory()
 		ActiveInventoryWidget->RemoveFromParent();
 		ActiveInventoryWidget = nullptr;
 		
-		if (PC)
+		if (UGameInstance* GI = GetGameInstance())
 		{
-			PC->bShowMouseCursor = false;
-			PC->SetInputMode(FInputModeGameOnly());
+			GI->GetSubsystem<USayuUIInputModeSubsystem>()->PopUIRequest(TEXT("Inventory"));
 		}
+		
 		return;
 	}
 
@@ -211,17 +212,43 @@ void ASayuCharacter::DebugToggleInventory()
 		ActiveInventoryWidget->SetInventoryComponent(InventoryComponent);
 		ActiveInventoryWidget->AddToViewport();
 		
-		if (PC)
+		// if (PC)
+		// {
+		// 	PC->bShowMouseCursor = true;
+		//
+		// 	// GameAndUI: UI가 안 쓰는 입력(=토글 키)은 그대로 게임에 전달됨 —
+		// 	// 그래서 인벤토리 연 채로도 "I" 키로 다시 닫을 수 있음.
+		// 	FInputModeGameAndUI InputMode;
+		// 	InputMode.SetWidgetToFocus(ActiveInventoryWidget->TakeWidget());
+		// 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		// 	PC->SetInputMode(InputMode);
+		// }
+		
+		if (UGameInstance* GI = GetGameInstance())
 		{
-			PC->bShowMouseCursor = true;
-
-			// GameAndUI: UI가 안 쓰는 입력(=토글 키)은 그대로 게임에 전달됨 —
-			// 그래서 인벤토리 연 채로도 "I" 키로 다시 닫을 수 있음.
-			FInputModeGameAndUI InputMode;
-			InputMode.SetWidgetToFocus(ActiveInventoryWidget->TakeWidget());
-			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-			PC->SetInputMode(InputMode);
+			GI->GetSubsystem<USayuUIInputModeSubsystem>()->PushUIRequest(TEXT("Inventory"));
 		}
+	}
+}
+
+void ASayuCharacter::OnUIMousePressed()
+{
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); // 화면 밖으로도 나갈 수 있게(드래그 자유도)
+		InputMode.SetHideCursorDuringCapture(false);
+		PC->SetInputMode(InputMode);
+		PC->SetShowMouseCursor(true);
+	}
+}
+
+void ASayuCharacter::OnUIMouseReleased()
+{
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		PC->SetInputMode(FInputModeGameOnly());
+		PC->SetShowMouseCursor(false);
 	}
 }
 
@@ -316,6 +343,12 @@ void ASayuCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		
 		EIC->BindAction(IA_DebugToggleInventory, ETriggerEvent::Started,
 			this, &ASayuCharacter::DebugToggleInventory);
+		
+		EIC->BindAction(IA_ToggleUIMouse, ETriggerEvent::Started,
+			this, &ASayuCharacter::OnUIMousePressed);
+		
+		EIC->BindAction(IA_ToggleUIMouse, ETriggerEvent::Completed,
+			this, &ASayuCharacter::OnUIMouseReleased);
 	}
 }
 
