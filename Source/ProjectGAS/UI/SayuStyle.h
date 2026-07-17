@@ -5,7 +5,7 @@
 class FSlateStyleSet;
 class ISlateStyle;
 
-// 프로젝트 정식 스타일 등록소. 학습용 FSayuStudyStyle과 별개로 공존 (Study 처분 시 함께 정리).
+// 프로젝트 정식 스타일 등록소. 위젯 스타일들을 Slate 스타일 레지스트리에 등록/해제한다.
 class PROJECTGAS_API FSayuStyle
 {
 public:
