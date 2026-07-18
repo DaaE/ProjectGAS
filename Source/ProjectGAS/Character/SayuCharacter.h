@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2026 Sungmin JI. All Rights Reserved.
 
 #pragma once
 // #pragma once : 이 헤더가 여러 번 include 되어도 한 번만 처리하라는 지시어
