@@ -24,6 +24,19 @@
      오디오 순 증분 확장
    - 현재 인벤토리/HUD의 AddToViewport 직접 부착(스택 미인지)을 정식 스택 push로 교체,
      `USaytUIInputModeSubsystem`(가교)도 이때 정리
+   - **가교 정리 시 함께 처리할 미결 3건** (Phase 8 Stage 2 워밍업에서 조사, 의도적 연기):
+     (a) Alt 홀드 경로(`SaytCharacter.cpp` `OnUIMousePressed`/`OnUIMouseReleased`)가 가교를
+     우회해 `SetInputMode`를 직접 호출 — Stage 0에서 인벤토리 경로만 교체되고 누락됨.
+     증상: Alt 홀드 중 인벤토리를 열고 Alt를 떼면 요청 집합에 Inventory가 남아 있는데도
+     `FInputModeGameOnly`가 직접 적용되어 커서가 사라짐(last-write-wins).
+     (b) `ApplyCurrentMode()`의 PC 조회가 `GetPlayerController(World, 0)` — 호출부는
+     `GetController()`(자기 폰의 컨트롤러)라 경로가 불일치. 싱글플레이에선 무해하나
+     Phase 10 리플리케이션에서 로컬 플레이어가 0번이 아닌 클라이언트에서 오작동.
+     `UGameInstanceSubsystem`이 플레이어를 모르는 구조이므로 `ULocalPlayerSubsystem` 전환
+     또는 PC 인자화 검토.
+     (c) 인벤토리의 `SetWidgetToFocus(ActiveInventoryWidget->TakeWidget())`가 가교 이관 중
+     유실됨. 현재는 마우스 전용 조작이라 무증상이나, Stage 3·5 키보드/게임패드 내비게이션
+     도입 시 필요 — CommonUI `GetDesiredInputConfig`가 담당할 영역.
    - 목표는 실무 투입 가능한 깊이
 2. **목표 추적 커널 + 튜토리얼 프레젠테이션** *(1번 종속)* —
    - 커널: 목표 정의(DataTable/DataAsset: 트리거 GMS 태그·조건·횟수) + 진행 매칭(GMS 순수
