@@ -2,7 +2,7 @@
 
 #include "SaytEditor.h"
 
-DEFINE_LOG_CATEGORY(LogSayuEditor);
+DEFINE_LOG_CATEGORY(LogSaytEditor);
 
 #define LOCTEXT_NAMESPACE "FSaytEditorModule"
 

@@ -19,7 +19,7 @@
 			"Name": "SaytEditor",
 			"Type": "Editor",
 			"LoadingPhase": "Default",
-			"AdditionalDependencies:": [
+			"AdditionalDependencies": [
 				"Engine",
 				"UnrealEd",
 				"Blutility",

@@ -6,7 +6,7 @@
 #include "Modules/ModuleManager.h"
 #include "Logging/LogMacros.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogSayuEditor, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogSaytEditor, Log, All);
 
 class FSaytEditorModule : public IModuleInterface
 {

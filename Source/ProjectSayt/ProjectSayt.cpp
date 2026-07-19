@@ -2,16 +2,16 @@
 
 #include "ProjectSayt.h"
 #include "Modules/ModuleManager.h"
-#include "UI/SayuStyle.h"
+#include "UI/SaytStyle.h"
 
 void FProjectSaytModule::StartupModule()
 {
-	FSayuStyle::Initialize();
+	FSaytStyle::Initialize();
 }
 
 void FProjectSaytModule::ShutdownModule()
 {
-	FSayuStyle::Shutdown();
+	FSaytStyle::Shutdown();
 }
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FProjectSaytModule, ProjectSayt, "ProjectSayt" );
