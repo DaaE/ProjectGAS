@@ -24,8 +24,9 @@ ASaytCharacterBase::ASaytCharacterBase()
 	// DataTable에서 가져올 ID
 	CombatStatsRowID = TEXT("Player_Default");
 	
-	// 생성자에 추가 - 틱이 꺼져있으면 디버그도 안 그려지니 켜둠
-	PrimaryActorTick.bCanEverTick = true;
+	// 프레임 단위 로직이 없음 — 필요해지는 자식이 생기면 그쪽에서 켤 것.
+	// 캡슐 콜리전 확인은 엔진 내장 `show Collision`으로 대체됨.
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 // GAS 생태계 전체 (어빌리티, GameplayCue, UI 등)가
@@ -117,23 +118,4 @@ void ASaytCharacterBase::GiveDefaultAbilities()
 			// 이 시점부터 TryActivateAbility로 발동 가능해짐
 		}
 	}
-}
-
-void ASaytCharacterBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-#if !UE_BUILD_SHIPPING
-	if (bShowCollisionDebug)
-	{
-		if (UCapsuleComponent* Capsule = GetCapsuleComponent())
-		{
-			DrawDebugCapsule(GetWorld(), Capsule->GetComponentLocation(),
-				Capsule->GetScaledCapsuleHalfHeight(),
-				Capsule->GetScaledCapsuleRadius(),
-				Capsule->GetComponentQuat(),
-				FColor::Green, false, -1.f, 0, 1.5f);
-		}
-	}
-#endif
 }

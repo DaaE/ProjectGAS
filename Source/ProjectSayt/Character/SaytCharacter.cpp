@@ -22,7 +22,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "SaytLogChannels.h"
-#include "AbilitySystem/Attributes/SaytAttributeSet_Combat.h"
+#include "Engine/GameInstance.h"
 #include "Items/SaytItemDefinition.h"
 #include "Items/SaytItemFragment.h"
 #include "items/SaytItemInstance.h"
@@ -36,12 +36,6 @@ ASaytCharacter::ASaytCharacter()
 // 생성자 - C#의 Awake() 또는 생성자와 같음
 // 컴포넌트 생성과 기본값 설정은 여기서
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-	// Tick(Update)를 활성화할지 여부
-	// C#에서는 Update()가 항상 호출됐지만
-	// UE에서는 성능을 위해 필요한 것만 true로 설정
-	
 	// === 카메라 붐 생성 ===
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	// CreateDefaultSubobject : 생성자에서만 쓰는 컴포넌트 생성 함수
@@ -388,9 +382,4 @@ void ASaytCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);    // 좌우 회전
 		AddControllerPitchInput(LookAxisVector.Y);  // 상하 회전
 	}
-}
-
-void ASaytCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }

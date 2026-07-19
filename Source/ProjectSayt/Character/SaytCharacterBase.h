@@ -41,8 +41,6 @@ public:
 	// Sets default values for this character's properties
 	ASaytCharacterBase();
 	
-	virtual void Tick(float DeltaTime) override;
-	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
@@ -74,10 +72,6 @@ protected:
 	// 게임 시작 시 위 목록을 실제로 ASC에 등록하는 함수
 	void GiveDefaultAbilities();
 	
-	// 임시 디버그용 - Phase 7에서 정식 토글 시스템으로 대체될 예정
-	UPROPERTY(EditAnywhere, Category = "Debug")
-	bool bShowCollisionDebug = false;
-
 private:
 	void InitializeAbilitySystem();
 

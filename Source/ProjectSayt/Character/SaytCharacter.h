@@ -35,10 +35,6 @@ public:
 	// Sets default values for this character's properties
 	ASaytCharacter();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	// C#의 Update() 와 같음. DeltaTime = Time.deltaTime
-	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// 입력 바인딩 설정 함수 - Enhanced Input 연결 여기서 함
