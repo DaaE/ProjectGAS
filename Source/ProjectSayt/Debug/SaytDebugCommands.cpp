@@ -29,6 +29,7 @@
 #include "UI/Slate/SSaytHealthBar.h"
 #include "UI/Slate/SSaytHealthDisplay.h"
 #include "UI/Slate/SSaytOrbTray.h"
+#include "UI/SaytHealthDisplayTypes.h"
 #include "UI/Slate/SSaytTuningPanel.h"
 #include "Widgets/Layout/SBox.h"
 
@@ -313,6 +314,7 @@ namespace SaytHealthDisplayDebug
 		else
 		{
 			TSharedPtr<SSaytHealthDisplay> Display;
+			const FSaytHealthDisplayPreset BossPreset = GetSaytHealthDisplayPreset(ESaytHealthDisplayType::Boss);
 			DisplayRoot = SNew(SBox)
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Top)
@@ -320,7 +322,8 @@ namespace SaytHealthDisplayDebug
 				[
 					SAssignNew(Display, SSaytHealthDisplay)
 					.SegmentCount(4)
-					.DesiredBarSize(FVector2D(500.f, 26.f))
+					.BarStyle(BossPreset.BarStyle)
+					.DesiredBarSize(BossPreset.BarSize)
 				];
 			DisplayWidget = Display;
 			GEngine->GameViewport->AddViewportWidgetContent(DisplayRoot.ToSharedRef());

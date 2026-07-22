@@ -58,4 +58,14 @@ private:
 	FSlateBrush EmptyBrush;
 
 	TSlateAttribute<int32> RemainingOrbsAttribute;
+	
+	// ── 파괴 팝 연출: 스케일↑ + 알파↓, 0.35초 (ActiveTimer 구동) ──
+	// FCurveSequence가 정석 도구지만 Stage 4(데미지 폰트) 커리큘럼 소재라
+	// 여기선 Stage 1에서 배운 ActiveTimer + 수동 보간으로 처리 (의도된 선택)
+	float PopDuration = 0.35f;
+	float PopElapsed = 0.f;
+	int32 PopIndexBegin = INDEX_NONE;   // [Begin, End) 슬롯이 팝 재생 중
+	int32 PopIndexEnd = INDEX_NONE;
+	TSharedPtr<FActiveTimerHandle> PopTimerHandle;
+	EActiveTimerReturnType PopTick(double InCurrentTime, float InDeltaTime);
 };

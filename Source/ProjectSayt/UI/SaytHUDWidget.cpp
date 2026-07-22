@@ -5,6 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "Components/NativeWidgetHost.h"
+#include "UI/SaytHealthDisplayTypes.h"
 #include "UI/Slate/SSaytHealthDisplay.h"
 
 void USaytHUDWidget::NativeOnInitialized()
@@ -13,9 +14,12 @@ void USaytHUDWidget::NativeOnInitialized()
 	
 	if (HealthBarHost)
 	{
-		// 범용 표시 단위 생성(기본 SegmentCount 1 → 트레이 없음, Stage 1과 동일 룩)
-		// → UMG 트리에 안착 → 플레이어 ASC에 바인딩 (초기 Pull은 BindToASC 내부 담당)
-		HealthBar = SNew(SSaytHealthDisplay);
+		// enum → 프리셋 조회 → 개별 값 전달. 위젯은 타입을 모른다
+		const FSaytHealthDisplayPreset Preset = GetSaytHealthDisplayPreset(ESaytHealthDisplayType::Player);
+		HealthBar = SNew(SSaytHealthDisplay)
+			.BarStyle(Preset.BarStyle)
+			.DesiredBarSize(Preset.BarSize);
+		
 		HealthBarHost->SetContent(HealthBar.ToSharedRef());
 		
 		if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwningPlayerPawn()))

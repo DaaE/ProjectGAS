@@ -40,6 +40,10 @@ struct PROJECTSAYT_API FSaytHealthBarStyle : public FSlateWidgetStyle
 
 	// ── 고스트 연출 파라미터 (연출 튜닝 값은 스타일 소관 — EnableFillAnimation 선례) ──
 	UPROPERTY(EditAnywhere, Category = Appearance)
+	bool bEnableGhost = true;   // 타입별 온/오프 — 일반몹은 잔상 없음
+	FSaytHealthBarStyle& SetEnableGhost(bool bInValue) { bEnableGhost = bInValue; return *this; }
+	
+	UPROPERTY(EditAnywhere, Category = Appearance)
 	float GhostDelay = 0.25f;   // 피격 후 잔상이 줄기 시작할 때까지 대기(초)
 	FSaytHealthBarStyle& SetGhostDelay(float InValue) { GhostDelay = InValue; return *this; }
 	

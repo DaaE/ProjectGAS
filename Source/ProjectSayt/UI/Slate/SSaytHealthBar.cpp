@@ -140,6 +140,14 @@ float SSaytHealthBar::GetHealthPercent() const
 void SSaytHealthBar::SyncGhostToPercent()
 {
 	const float NewPercent = GetHealthPercent();
+	if (!Style->bEnableGhost)
+	{
+		// 고스트 오프: 잔상은 항상 본체와 동행 → 그리기 조건(GhostPercent > Percent)이
+		// 영원히 성립하지 않고, 타이머도 애초에 깨어나지 않는다
+		GhostPercent = NewPercent;
+		return;
+	}
+	
 	if (NewPercent < GhostPercent)
 	{
 		StartGhostDrain();              // 감소: 잔상은 남고, 지연 후 따라 내려옴

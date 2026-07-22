@@ -35,6 +35,38 @@ void FSaytStyle::Initialize()
 		.SetTickColor(FLinearColor(0.f, 0.f, 0.f, 0.25f))
 		.SetGhostDelay(0.25f)
 		.SetGhostDrainSpeed(1.2f));
+	
+	// ── 타입 프리셋 (2-4): 키가 곧 타입별 룩. 조회는 GetSaytHealthDisplayPreset 경유 ──
+	Instance->Set("Sayt.HealthBar.Boss", FSaytHealthBarStyle()
+		.SetBackgroundBrush(FSlateRoundedBoxBrush(FLinearColor::White, 5.f))
+		.SetFillBrush(FSlateRoundedBoxBrush(FLinearColor::White, 5.f))
+		.SetGhostBrush(FSlateRoundedBoxBrush(FLinearColor(1.f, 0.45f, 0.1f, 0.6f), 5.f))
+		.SetFrameBrush(FSlateRoundedBoxBrush(FLinearColor::Transparent, 5.f, FLinearColor(0.9f, 0.95f, 1.f, 0.7f), 2.5f))
+		.SetHighlightBrush(FSlateColorBrush(FLinearColor(1.f, 1.f, 1.f, 0.10f)))
+		.SetDefaultFillTint(FLinearColor(0.7f, 0.1f, 0.1f))
+		.SetDefaultBackgroundTint(FLinearColor(0.02f, 0.02f, 0.025f, 0.92f))
+		.SetShadeTopAlpha(0.f)
+		.SetShadeBottomAlpha(0.4f)
+		.SetShowTicks(true)
+		.SetTickColor(FLinearColor(0.f, 0.f, 0.f, 0.25f))
+		.SetEnableGhost(true)
+		.SetGhostDelay(0.3f)
+		.SetGhostDrainSpeed(1.0f));
+	
+	Instance->Set("Sayt.HealthBar.Mob", FSaytHealthBarStyle()
+		.SetBackgroundBrush(FSlateRoundedBoxBrush(FLinearColor::White, 3.f))
+		.SetFillBrush(FSlateRoundedBoxBrush(FLinearColor::White, 3.f))
+		.SetGhostBrush(FSlateRoundedBoxBrush(FLinearColor::Transparent, 3.f))   // 미사용이지만 명시
+		.SetFrameBrush(FSlateRoundedBoxBrush(FLinearColor::Transparent, 3.f, FLinearColor(1.f, 1.f, 1.f, 0.3f), 1.f))
+		.SetHighlightBrush(FSlateColorBrush(FLinearColor::Transparent))   // 소형 바에 유리띠는 노이즈
+		.SetDefaultFillTint(FLinearColor(0.7f, 0.1f, 0.1f))
+		.SetDefaultBackgroundTint(FLinearColor(0.02f, 0.02f, 0.025f, 0.85f))
+		.SetShadeTopAlpha(0.f)
+		.SetShadeBottomAlpha(0.2f)
+		.SetShowTicks(false)   // 90px 폭에 눈금은 노이즈
+		.SetTickColor(FLinearColor::Transparent)
+		.SetEnableGhost(false));   // 일반몹: 잔상 없음
+	
 
 	FSlateStyleRegistry::RegisterSlateStyle(*Instance);
 }

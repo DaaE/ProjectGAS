@@ -38,9 +38,24 @@ void SSaytOrbTray::Construct(const FArguments& InArgs)
 
 void SSaytOrbTray::SetRemainingOrbs(int32 InRemaining)
 {
-	// TSlateAttribute::Set이 이전 값과 비교해 실제 변화 시에만
-	// 등록된 사유(Paint)로 Invalidation을 걸어준다 — 중복 호출 무해
-	RemainingOrbsAttribute.Set(*this, FMath::Clamp(InRemaining, 0, OrbCount));
+	const int32 OldRemaining = RemainingOrbsAttribute.Get();
+	const int32 NewRemaining = FMath::Clamp(InRemaining, 0, OrbCount);
+	
+	// TSlateAttribute::Set이 비교 후 변화 시에만 Paint 신고 — 중복 호출 무해
+	RemainingOrbsAttribute.Set(*this, NewRemaining);
+	
+	// 감소 = 파괴 → 방금 비워진 [New, Old) 슬롯에 팝 재생
+	if (NewRemaining < OldRemaining)
+	{
+		PopIndexBegin = NewRemaining;
+		PopIndexEnd = OldRemaining;
+		PopElapsed = 0.f;
+		
+		if (!PopTimerHandle.IsValid())
+		{
+			PopTimerHandle = RegisterActiveTimer(0.f,FWidgetActiveTimerDelegate::CreateSP(this, &SSaytOrbTray::PopTick));
+		}
+	}
 }
 
 int32 SSaytOrbTray::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry,
@@ -70,6 +85,31 @@ int32 SSaytOrbTray::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedGeo
 			Brush->GetTint(InWidgetStyle) * ParentTint);
 	}
 
+	// 파괴 팝: 방금 비워진 슬롯 위에 채움 구슬이 커지며 사라진다.
+	// 빈 구슬(형제 층)과 '겹치는' 그리기이므로 층 분리 — Stage 1 층 규율 그대로
+	if (PopIndexBegin != INDEX_NONE)
+	{
+		const float T = FMath::Clamp(PopElapsed / PopDuration, 0.f, 1.f);
+		const float EaseOut = 1.f - FMath::Square(1.f - T);   // 초반 빠르고 끝에서 감속
+		const float Scale = FMath::Lerp(1.f, 1.6f, EaseOut);
+		const float Alpha = 1.f - T;
+		const float ScaledSize = OrbDiameter * Scale;
+		const float CenterShift = (ScaledSize - OrbDiameter) * 0.5f;   // 제자리 중심 확대
+		
+		for (int32 i = PopIndexBegin; i < PopIndexEnd; ++i)
+		{
+			const float OffsetX = i * (OrbDiameter + OrbSpacing);
+			FSlateDrawElement::MakeBox(
+				OutDrawElements, LayerId + 1,
+				AllottedGeometry.ToPaintGeometry(
+					FVector2D(ScaledSize, ScaledSize),
+					FSlateLayoutTransform(FVector2D(OffsetX - CenterShift, OffsetY - CenterShift))),
+					&FilledBrush, ESlateDrawEffect::None,
+					FilledBrush.GetTint(InWidgetStyle) * ParentTint * FLinearColor(1.f, 1.f, 1.f, Alpha));
+		}
+		return LayerId + 1;
+	}
+	
 	return LayerId;
 }
 
@@ -80,4 +120,20 @@ FVector2D SSaytOrbTray::ComputeDesiredSize(float LayoutScaleMultiplier) const
 		return FVector2D::ZeroVector;
 	}
 	return FVector2D(OrbCount * OrbDiameter + (OrbCount - 1) * OrbSpacing, OrbDiameter);
+}
+
+EActiveTimerReturnType SSaytOrbTray::PopTick(double InCurrentTime, float InDeltaTime)
+{
+	PopElapsed += InDeltaTime;
+	Invalidate(EInvalidateWidgetReason::Paint);   // 매 프레임 그림이 변하는 구간 — 정직한 신고
+
+	if (PopElapsed >= PopDuration)
+	{
+		// 종료 — 장부 정리 후 타이머 소멸, 위젯은 다시 완전 휴면으로 (고스트와 동일 규율)
+		PopIndexBegin = INDEX_NONE;
+		PopIndexEnd = INDEX_NONE;
+		PopTimerHandle.Reset();
+		return EActiveTimerReturnType::Stop;
+	}
+	return EActiveTimerReturnType::Continue;
 }
