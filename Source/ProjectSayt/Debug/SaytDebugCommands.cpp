@@ -25,6 +25,8 @@
 #include "GameFramework/PlayerController.h"
 #include "HAL/IConsoleManager.h"
 #include "SaytLogChannels.h"
+#include "Character/SaytNPCCharacter.h"
+#include "EngineUtils.h"
 #include "UI/SaytSegmentedHealth.h"
 #include "UI/Slate/SSaytHealthBar.h"
 #include "UI/Slate/SSaytHealthDisplay.h"
@@ -390,6 +392,63 @@ namespace SaytHealthDisplayDebug
 		TEXT("표시 단위를 플레이어 ASC에 바인딩합니다 (실 GAS 경로 검증)."),
 		FConsoleCommandDelegate::CreateStatic(&BindPlayer)
 	);
+}
+
+// ═════════════════════════════════════════════════════════════
+// Phase 8 Stage 2-5 — 월드→스크린 투영 실험
+// ═════════════════════════════════════════════════════════════
+namespace SaytProjectionTest
+{
+	static void RunProjectionTest()
+	{
+		if (!GEngine || !GEngine->GameViewport)
+		{
+			return;
+		}
+
+		UWorld* World = GEngine->GameViewport->GetWorld();
+		if (!World)
+		{
+			return;
+		}
+
+		APlayerController* PC = World->GetFirstPlayerController();
+		if (!PC)
+		{
+			return;
+		}
+
+		int32 Count = 0;
+
+		// TActorIterator: 월드의 특정 타입 액터 전체 순회.
+		// Unity의 FindObjectsOfType<T>() 대응 — 단, 배열을 만들어 반환하는 게 아니라
+		// 순회하면서 하나씩 방문하는 이터레이터라 임시 할당이 없습니다.
+		for (TActorIterator<ASaytNPCCharacter> It(World); It; ++It)
+		{
+			ASaytNPCCharacter* NPC = *It;
+
+			// 머리 위 = 액터 중심 + 캡슐 반높이 + 여유 마진
+			const float HalfHeight = NPC->GetSimpleCollisionHalfHeight();
+			const FVector HeadLocation = NPC->GetActorLocation() + FVector(0.f, 0.f, HalfHeight + 30.f);
+
+			FVector2D ScreenPos = FVector2D::ZeroVector;
+			const bool bInFront = PC->ProjectWorldLocationToScreen(HeadLocation, ScreenPos, true);
+
+			UE_LOG(LogSaytUI, Verbose,
+				TEXT("[투영] %s | 머리 월드 %s | 카메라 앞=%s | 스크린 (%.0f, %.0f)"),
+				*NPC->GetName(), *HeadLocation.ToCompactString(),
+				bInFront ? TEXT("예") : TEXT("아니오"), ScreenPos.X, ScreenPos.Y);
+
+			++Count;
+		}
+
+		UE_LOG(LogSaytUI, Verbose, TEXT("[투영] NPC %d개 처리 완료"), Count);
+	}
+
+	static FAutoConsoleCommand ProjectionTestCommand(
+		TEXT("Sayt.Projection.Test"),
+		TEXT("배치된 모든 SaytNPCCharacter의 머리 위치를 스크린 좌표로 투영해 로그 출력"),
+		FConsoleCommandDelegate::CreateStatic(&RunProjectionTest));
 }
 
 #endif // !UE_BUILD_SHIPPING
