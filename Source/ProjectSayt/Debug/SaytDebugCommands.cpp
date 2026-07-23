@@ -27,6 +27,8 @@
 #include "SaytLogChannels.h"
 #include "Character/SaytNPCCharacter.h"
 #include "EngineUtils.h"
+#include "UI/Slate/SSaytWorldPanel.h"
+#include "Widgets/Colors/SColorBlock.h"
 #include "UI/SaytSegmentedHealth.h"
 #include "UI/Slate/SSaytHealthBar.h"
 #include "UI/Slate/SSaytHealthDisplay.h"
@@ -449,6 +451,86 @@ namespace SaytProjectionTest
 		TEXT("Sayt.Projection.Test"),
 		TEXT("배치된 모든 SaytNPCCharacter의 머리 위치를 스크린 좌표로 투영해 로그 출력"),
 		FConsoleCommandDelegate::CreateStatic(&RunProjectionTest));
+}
+
+// ═════════════════════════════════════════════════════════════
+// Phase 8 Stage 2-6 — 월드 패널 실험 (NPC 머리 위 색 블록)
+// ═════════════════════════════════════════════════════════════
+namespace SaytWorldPanelTest
+{
+	static TSharedPtr<SSaytWorldPanel> ActivePanel;
+	static FDelegateHandle WorldCleanupHandle;
+
+	static void OnWorldCleanup(UWorld* World, bool bSessionEnded, bool bCleanupResources)
+	{
+		ActivePanel.Reset();
+	}
+
+	static void ToggleShow()
+	{
+		if (!GEngine || !GEngine->GameViewport)
+		{
+			return;
+		}
+
+		if (!WorldCleanupHandle.IsValid())
+		{
+			WorldCleanupHandle = FWorldDelegates::OnWorldCleanup.AddStatic(&OnWorldCleanup);
+		}
+
+		if (ActivePanel.IsValid())
+		{
+			GEngine->GameViewport->RemoveViewportWidgetContent(ActivePanel.ToSharedRef());
+			ActivePanel.Reset();
+			return;
+		}
+
+		UWorld* World = GEngine->GameViewport->GetWorld();
+		if (!World)
+		{
+			return;
+		}
+
+		APlayerController* PC = World->GetFirstPlayerController();
+		if (!PC)
+		{
+			return;
+		}
+
+		ActivePanel = SNew(SSaytWorldPanel, PC);
+
+		static const FLinearColor Colors[] = { FLinearColor::Red, FLinearColor::Green, FLinearColor::Yellow };
+		int32 Count = 0;
+
+		for (TActorIterator<ASaytNPCCharacter> It(World); It; ++It)
+		{
+			ASaytNPCCharacter* NPC = *It;
+			const float HalfHeight = NPC->GetSimpleCollisionHalfHeight();
+			const FVector HeadLocation = NPC->GetActorLocation() + FVector(0.f, 0.f, HalfHeight + 30.f);
+
+			ActivePanel->AddSlot()
+				.WorldLocation(HeadLocation)
+				[
+					SNew(SBox)
+					.WidthOverride(96.f)
+					.HeightOverride(12.f)
+					[
+						SNew(SColorBlock)
+						.Color(Colors[Count % 3])
+					]
+				];
+
+			++Count;
+		}
+
+		GEngine->GameViewport->AddViewportWidgetContent(ActivePanel.ToSharedRef(), 10);
+		UE_LOG(LogSaytUI, Verbose, TEXT("[월드패널] NPC %d개에 색 블록 부착"), Count);
+	}
+
+	static FAutoConsoleCommand ShowCommand(
+		TEXT("Sayt.WorldPanel.Show"),
+		TEXT("월드 패널 실험 토글 - 배치된 NPC 머리 위에 색 블록 표시"),
+		FConsoleCommandDelegate::CreateStatic(&ToggleShow));
 }
 
 #endif // !UE_BUILD_SHIPPING
